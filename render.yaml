@@ -2,6 +2,7 @@ services:
   - type: web
     name: ssl-security-analysis
     env: node
+    runtime: node
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
