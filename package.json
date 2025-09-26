@@ -7,8 +7,9 @@
   },
   "scripts": {
     "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend",
-    "start": "NODE_ENV=production npm run start --prefix Backend",
-    "dev": "npm run dev --prefix Backend"
+    "start": "NODE_ENV=production node Backend/app.js",
+    "dev": "cd Backend && npm run dev",
+    "heroku-postbuild": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend"
   },
   "keywords": ["ssl", "security", "analysis", "certificate"],
   "author": "",
