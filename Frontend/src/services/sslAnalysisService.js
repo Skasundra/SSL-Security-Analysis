@@ -5,7 +5,7 @@ import axios from 'axios'
  */
 
 
-const BASE_URL = import.meta.env.VITE_NODE_ENV === "development" ? "http://localhost:9000" : "/api";
+const BASE_URL = import.meta.env.DEV ? "http://localhost:9000" : "/api";
 
 console.log("BASE_URL0----------------->",BASE_URL)
 

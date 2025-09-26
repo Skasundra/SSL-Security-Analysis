@@ -10,7 +10,7 @@ import sslAnalysisService from '../services/sslAnalysisService'
  */
 
 
-const BASE_URL = import.meta.env.VITE_NODE_ENV === "development" ? "http://localhost:9000" : "/api";
+const BASE_URL = import.meta.env.DEV ? "http://localhost:9000" : "/api";
 
 
 export const useSSLAnalysis = (domain, options = {}) => {
