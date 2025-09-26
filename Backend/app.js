@@ -66,16 +66,16 @@ const validateDomain = (req, res, next) => {
   next();
 };
 
-// Root route - API documentation
-app.get("/", (req, res) => {
+// API documentation route
+app.get("/api", (req, res) => {
   res.json({
     name: "SSL Security Analysis API",
     version: "2.0.0",
     description:
       "Comprehensive SSL/TLS security analysis and certificate transparency monitoring",
     endpoints: {
-      "GET /analyze/:domain": "Complete SSL security analysis (recommended)",
-      "GET /health": "API health status",
+      "GET /api/analyze/:domain": "Complete SSL security analysis (recommended)",
+      "GET /api/health": "API health status",
     },
     usage: {
       example: `${req.protocol}://${req.get("host")}/analyze/google.com`,
@@ -94,7 +94,7 @@ app.get("/", (req, res) => {
 });
 
 // Main analysis endpoint - combines SSL Labs + Certificate Transparency
-app.get("/analyze/:domain", validateDomain, async (req, res) => {
+app.get("/api/analyze/:domain", validateDomain, async (req, res) => {
   const { domain } = req.params;
   const startTime = Date.now();
 
@@ -172,7 +172,7 @@ app.get("/analyze/:domain", validateDomain, async (req, res) => {
 });
 
 // Health check endpoint
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   const uptime = process.uptime();
   const memUsage = process.memoryUsage();
 
@@ -286,11 +286,15 @@ process.on("SIGINT", () => {
   process.exit(0);
 });
 
+// Serve static files from React build in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
 
+  // Handle React routing - serve index.html for all non-API routes
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    if (!req.path.startsWith("/api")) {
+      res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+    }
   });
 }
 

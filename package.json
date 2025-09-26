@@ -1,13 +1,17 @@
 {
   "name": "ssl-security-analysis",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "Backend/app.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend",
-    "start": "npm run start --prefix Backend"
+    "start": "NODE_ENV=production npm run start --prefix Backend",
+    "dev": "npm run dev --prefix Backend"
   },
-  "keywords": [],
+  "keywords": ["ssl", "security", "analysis", "certificate"],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "SSL Security Analysis Tool with React Frontend and Express Backend"
 }
