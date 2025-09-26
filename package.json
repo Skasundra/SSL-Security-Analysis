@@ -6,9 +6,10 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend",
+    "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend && node verify-build.js",
     "start": "NODE_ENV=production node Backend/app.js",
     "dev": "cd Backend && npm run dev",
+    "verify": "node verify-build.js",
     "heroku-postbuild": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend"
   },
   "keywords": ["ssl", "security", "analysis", "certificate"],

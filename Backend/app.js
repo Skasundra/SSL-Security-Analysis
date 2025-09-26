@@ -260,16 +260,59 @@ function generateSecuritySummary(data) {
   return summary;
 }
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: "Endpoint not found",
-    message: `${req.method} ${req.path} is not a valid endpoint`,
-    availableEndpoints: ["GET /api/analyze/:domain", "GET /api/health"],
-    timestamp: new Date().toISOString(),
+// Serve static files from React build in production
+if (process.env.NODE_ENV === "production") {
+  console.log("Setting up static file serving for production...");
+  const staticPath = path.join(__dirname, "../Frontend/dist");
+  console.log("Static files path:", staticPath);
+  
+  // Check if dist folder exists
+  import('fs').then(fs => {
+    if (fs.existsSync(staticPath)) {
+      console.log("✅ Frontend dist folder exists");
+      const files = fs.readdirSync(staticPath);
+      console.log("📁 Files in dist folder:", files);
+    } else {
+      console.error("❌ Frontend dist folder not found!");
+    }
   });
-});
+  
+  app.use(express.static(staticPath, {
+    maxAge: '1d',
+    etag: false,
+    setHeaders: (res, path) => {
+      console.log('📁 Serving static file:', path);
+    }
+  }));
+
+  // Handle React routing - serve index.html for all non-API routes
+  app.get("*", (req, res) => {
+    if (!req.path.startsWith("/api")) {
+      console.log("Serving index.html for path:", req.path);
+      res.sendFile(path.join(staticPath, "index.html"));
+    } else {
+      // API route not found
+      res.status(404).json({
+        success: false,
+        error: "API endpoint not found",
+        message: `${req.method} ${req.path} is not a valid API endpoint`,
+        availableEndpoints: ["GET /api/analyze/:domain", "GET /api/health"],
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+} else {
+  // 404 handler for development
+  app.use((req, res) => {
+    res.status(404).json({
+      success: false,
+      error: "Endpoint not found",
+      message: `${req.method} ${req.path} is not a valid endpoint`,
+      availableEndpoints: ["GET /api/analyze/:domain", "GET /api/health"],
+      timestamp: new Date().toISOString(),
+    });
+  });
+}
 
 // Global error handler
 app.use((error, req, res, next) => {
@@ -294,18 +337,6 @@ process.on("SIGINT", () => {
   console.log("SIGINT received, shutting down gracefully");
   process.exit(0);
 });
-
-// Serve static files from React build in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-
-  // Handle React routing - serve index.html for all non-API routes
-  app.get("*", (req, res) => {
-    if (!req.path.startsWith("/api")) {
-      res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
-    }
-  });
-}
 
 // Start server
 app.listen(PORT, () => {
