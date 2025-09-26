@@ -66,6 +66,15 @@ const validateDomain = (req, res, next) => {
   next();
 };
 
+// Root route - redirect to frontend
+app.get("/", (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+  } else {
+    res.redirect("http://localhost:3001");
+  }
+});
+
 // API documentation route
 app.get("/api", (req, res) => {
   res.json({
@@ -78,7 +87,7 @@ app.get("/api", (req, res) => {
       "GET /api/health": "API health status",
     },
     usage: {
-      example: `${req.protocol}://${req.get("host")}/analyze/google.com`,
+      example: `${req.protocol}://${req.get("host")}/api/analyze/google.com`,
       rateLimit: "No rate limiting currently applied",
       timeout: "Maximum 2 minutes per analysis",
     },
@@ -257,7 +266,7 @@ app.use((req, res) => {
     success: false,
     error: "Endpoint not found",
     message: `${req.method} ${req.path} is not a valid endpoint`,
-    availableEndpoints: ["GET /analyze/:domain", "GET /health"],
+    availableEndpoints: ["GET /api/analyze/:domain", "GET /api/health"],
     timestamp: new Date().toISOString(),
   });
 });
